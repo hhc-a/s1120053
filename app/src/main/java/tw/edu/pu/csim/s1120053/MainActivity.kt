@@ -19,7 +19,11 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import tw.edu.pu.csim.s1120053.ui.theme.S1120053Theme
 
 class MainActivity : ComponentActivity() {
@@ -57,6 +66,9 @@ fun Start(modifier: Modifier) {
         Color(0xffa5dfed)
     )
     var colorIndex by remember { mutableStateOf(0) }
+    var gameTime by remember { mutableStateOf(0) }
+    var isGameOver by remember { mutableStateOf(false) }
+    var mariaPosition by remember { mutableStateOf(0f) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +76,7 @@ fun Start(modifier: Modifier) {
             .pointerInput(Unit) {
                 detectHorizontalDragGestures { _, dragAmount ->
                     var dragDelta = dragAmount
-                    val threshold = 50f
+                    val threshold = 30f
                     if (dragDelta > threshold) {
                         colorIndex = (colorIndex + 1) % colors.size
                         backgroundColor = colors[colorIndex]
@@ -78,7 +90,6 @@ fun Start(modifier: Modifier) {
             }
     ) {
         Column(
-//            modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "")
@@ -86,10 +97,8 @@ fun Start(modifier: Modifier) {
             Image(
                 painter = painterResource(id = R.drawable.class_b),
                 contentDescription = "B班",
-//                modifier = Modifier
-//                    .fillMaxSize()
             )
-            Text(text = "遊戲持續時間 0 秒")
+            Text(text = "遊戲持續時間: $gameTime 秒", style = MaterialTheme.typography.titleLarge)
             Text(text = "您的成績 0 分")
             Button(
                 onClick = {(context as? android.app.Activity)?.finish()}
@@ -97,5 +106,23 @@ fun Start(modifier: Modifier) {
                 Text(text = "結束APP")
             }
         }
+        LaunchedEffect(Unit) {
+            while (!isGameOver) {
+                delay(1000L)
+                gameTime += 1
+                mariaPosition += 50f
+                if (mariaPosition >= 1080f) {
+                    isGameOver = true
+                }
+            }
+        }
+        Image(
+            painter = painterResource(id = R.drawable.maria2),
+            contentDescription = "瑪利亞",
+            modifier = Modifier
+                .size(200.dp)
+                .align(Alignment.BottomStart)
+                .offset(x = mariaPosition.dp)
+        )
     }
 }
