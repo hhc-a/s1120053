@@ -14,6 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import android.content.pm.ActivityInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +25,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import tw.edu.pu.csim.s1120053.ui.theme.S1120053Theme
@@ -45,11 +49,33 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Start(modifier: Modifier) {
     val context = LocalContext.current
+    var backgroundColor by remember { mutableStateOf(Color(0xff95fe95)) }
+    val colors = listOf(
+        Color(0xff95fe95),
+        Color(0xfffdca0f),
+        Color(0xfffea4a4),
+        Color(0xffa5dfed)
+    )
+    var colorIndex by remember { mutableStateOf(0) }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xff95fe95))
-//            .padding(16.dp)
+            .background(backgroundColor)
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    var dragDelta = dragAmount
+                    val threshold = 50f
+                    if (dragDelta > threshold) {
+                        colorIndex = (colorIndex + 1) % colors.size
+                        backgroundColor = colors[colorIndex]
+                        dragDelta = 0f
+                    } else if (dragDelta < -threshold) {
+                        colorIndex = (colorIndex - 1 + colors.size) % colors.size
+                        backgroundColor = colors[colorIndex]
+                        dragDelta = 0f
+                    }
+                }
+            }
     ) {
         Column(
 //            modifier = Modifier.align(Alignment.Center),
