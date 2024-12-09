@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import android.content.pm.ActivityInfo
 import tw.edu.pu.csim.s1120053.ui.theme.S1120053Theme
 
 class MainActivity : ComponentActivity() {
@@ -20,27 +21,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             S1120053Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                    Start(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun Start(modifier: Modifier){
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    S1120053Theme {
-        Greeting("Android")
-    }
 }
